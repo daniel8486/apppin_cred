@@ -4,13 +4,12 @@ class Page::CalcController < PageController
   require "base64"
   require "brdinheiro"
   require "brdata"
-  #before_action :verify_proposta, :action => [:enviar]
-
+ 
   def index 
 
     @users_office_footers = UsersOffice::Footer.all
      
-    url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/user")
+    url = URI("https://officer.softsaaspin.com.br/BJ21M05/user")
       
     https = Net::HTTP.new(url.host, url.port);
     https.use_ssl = true
@@ -40,7 +39,7 @@ class Page::CalcController < PageController
 
     def segundo_ponto(response_one,cookies,nome,email,cpf,telefone,valor,date,meses)
   
-      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
 
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
@@ -126,15 +125,15 @@ class Page::CalcController < PageController
     end 
 
 
-   def enviar
+    def enviar
 
-     @dados = params[:dados] 
-
-     url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
-
+      @dados = params[:dados] 
+  
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+  
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
-
+  
       request = Net::HTTP::Post.new(url)
       request["XSRF-TOKEN"] = "#{session[:set_cookies][11..46]}"
       request["Content-Type"] = "#{session[:content_type]}"
@@ -151,105 +150,104 @@ class Page::CalcController < PageController
         \n\"nrPropos\":\"\",
         \n\"dtPerIni\":\"#{@dados[5].to_s.gsub('-','')}\",
         \n\"dtPerFim\":\"#{Date.today}\"\n}"
-
+  
       response = https.request(request)
       response.read_body
-      
+  
       JSON.parse(response.read_body)
-
+  
       @result_propostas = JSON.parse(response.read_body)["propostas"] 
-
+  
+      verify_proposta = false 
+  
       @result_propostas.try(:each) do |proposta| 
-      if @dados[2].to_s == proposta["nrCpfCnpj"] && @dados[4].gsub('.','').gsub(',','.').to_f == proposta["vlSolic"]
-        puts "#Action VERIFY_PROPOSTA"
-        puts @dados[2].to_s
-        puts @dados[4].gsub('.','').gsub(',','.').to_f
-        puts proposta["nrCpfCnpj"]
-        puts proposta["vlSolic"]
+        if @dados[2].to_s == proposta["nrCpfCnpj"] && @dados[4].gsub('.','').gsub(',','.').to_f == proposta["vlSolic"]
+          puts "#Action VERIFY_PROPOSTA"
+          puts @dados[2].to_s
+          puts @dados[4].gsub('.','').gsub(',','.').to_f
+          puts proposta["nrCpfCnpj"]
+          puts proposta["vlSolic"]
+          verify_proposta = true
+        end
+      end
+  
+      if !verify_proposta
+        url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
+  
+        https = Net::HTTP.new(url.host, url.port);
+        https.use_ssl = true
+  
+        request = Net::HTTP::Post.new(url)
+        request["XSRF-TOKEN"] = "#{session[:set_cookies][11..46]}"
+        request["Content-Type"] = "#{session[:content_type]}"
+        request["Authorization"] = "#{"Bearer"' '+session[:auth]}"
+        request.body = "{
+        \n\"principal\": {\n\"cdProdut\": \"3018\",
+        \n\"cdConven\":\"108\",
+        \n\"cdLoja\":\"108\",
+        \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
+        \n\"qtPresta\": \"#{@dados[6].to_i}\",
+        \n\"qtMescar\": \"0\",
+        \n\"dtContra\": \"#{@dados[5].to_s.gsub('-','')}\",
+        \n\"dtVct1ap\": \"#{session[:result_segundo_ponto_dtvct1ap]}\",
+        \n\"dtVctult\": \"#{session[:result_segundo_ponto_dtvctult]}\",
+        \n\"vlContra\": \"#{session[:result_segundo_ponto_contra]}\",
+        \n\"vlPresta\": \"#{session[:result_segundo_ponto_presta]}\",
+        \n\"vlIofCob\": \"#{session[:result_segundo_ponto_iof]}\",
+        \n\"vlConces\": \"0.00\",
+        \n\"vlSeguro\": \"0\",
+        \n\"vlOutvlr\": \"0\",
+        \n\"vlTotal\":  \"#{session[:result_segundo_ponto_liquido]}\",
+        \n\"vlLiquid\": \"#{session[:result_segundo_ponto_liquido]}\",
+        \n\"txFinano\": \"#{session[:result_segundo_ponto_txaa]}\",
+        \n\"txRefCdc\": \"#{session[:result_segundo_ponto_txam]}\",
+        \n\"idCarctr\": \"30\",
+        \n\"txCetMes\": \"#{session[:result_segundo_ponto_txcetam]}\",
+        \n\"txCetAno\": \"#{session[:result_segundo_ponto_txcetaa]}\",
+        \n\"cdCvcons\": \"1000108\"\n},
+        \n\"fichaCadastralCliente\": {
+          \n\"cliente\": {
+              \n\"dsNome\": \"#{@dados[0].upcase.to_s}\",
+              \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
+              \n\"dsEmail\": \"#{@dados[1].to_s}\",
+              \n\n\"dadosProfissionais\": {
+                \n\"dsEmpres\": \"Pintos LTDA\",
+                \n\"nrCpfCnpj\": \"06837645000160\"\n}\n}\n}\n}\n"
+  
+        response = https.request(request)
+        puts response.code
+        puts response.read_body
+        puts JSON.parse(response.read_body)["status"]
+        puts JSON.parse(response.read_body)["globalMessage"]
+        puts JSON.parse(response.read_body)["messages"]
+  
+  
+        status = JSON.parse(response.read_body)["status"]
+        status_message = JSON.parse(response.read_body)["globalMessage"]
+        status_two = JSON.parse(response.read_body)["messages"][0]["message"]
+  
+        if response.code == "400"
+        redirect_to "/simulador-de-consignado" , 
+          notice: " Algo não saiu como o esperado,Tente Novamente! #{ status },#{ status_message },#{status_two }"
+        elsif 
+        redirect_to "/simulador-de-consignado" , 
+          notice: "Simulação, concluída com Sucesso ! Prazo para retorno de 48 a 72 horas! Numero do Processo: #{ status_two }, Situação: #{ status_message }"
+        end
       else
-     url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
- 
-     https = Net::HTTP.new(url.host, url.port);
-     https.use_ssl = true
- 
-      request = Net::HTTP::Post.new(url)
-      request["XSRF-TOKEN"] = "#{session[:set_cookies][11..46]}"
-      request["Content-Type"] = "#{session[:content_type]}"
-      request["Authorization"] = "#{"Bearer"' '+session[:auth]}"
-      request.body = "{
-       \n\"principal\": {\n\"cdProdut\": \"3018\",
-       \n\"cdConven\":\"108\",
-       \n\"cdLoja\":\"108\",
-       \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
-       \n\"qtPresta\": \"#{@dados[6].to_i}\",
-       \n\"qtMescar\": \"0\",
-       \n\"dtContra\": \"#{@dados[5].to_s.gsub('-','')}\",
-       \n\"dtVct1ap\": \"#{session[:result_segundo_ponto_dtvct1ap]}\",
-       \n\"dtVctult\": \"#{session[:result_segundo_ponto_dtvctult]}\",
-       \n\"vlContra\": \"#{session[:result_segundo_ponto_contra]}\",
-       \n\"vlPresta\": \"#{session[:result_segundo_ponto_presta]}\",
-       \n\"vlIofCob\": \"#{session[:result_segundo_ponto_iof]}\",
-       \n\"vlConces\": \"0.00\",
-       \n\"vlSeguro\": \"0\",
-       \n\"vlOutvlr\": \"0\",
-       \n\"vlTotal\":  \"#{session[:result_segundo_ponto_liquido]}\",
-       \n\"vlLiquid\": \"#{session[:result_segundo_ponto_liquido]}\",
-       \n\"txFinano\": \"#{session[:result_segundo_ponto_txaa]}\",
-       \n\"txRefCdc\": \"#{session[:result_segundo_ponto_txam]}\",
-       \n\"idCarctr\": \"30\",
-       \n\"txCetMes\": \"#{session[:result_segundo_ponto_txcetam]}\",
-       \n\"txCetAno\": \"#{session[:result_segundo_ponto_txcetaa]}\",
-       \n\"cdCvcons\": \"1000108\"\n},
-       \n\"fichaCadastralCliente\": {
-         \n\"cliente\": {
-            \n\"dsNome\": \"#{@dados[0].upcase.to_s}\",
-            \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
-            \n\"dsEmail\": \"#{@dados[1].to_s}\",
-            \n\"nrDDDCel\": \"86\",
-            \n\"nrCel\": \"#{@dados[3].to_s}\",
-            \n\"cdAutscr\": \"N\",
-            \n\n\"dadosProfissionais\": {
-              \n\"dsEmpres\": \"Pintos LTDA\",
-              \n\"nrCpfCnpj\": \"06837645000160\"\n}\n}\n}\n}\n"
-             
-      response = https.request(request)
-      puts response.code
-      puts response.read_body
-      puts JSON.parse(response.read_body)["status"]
-      puts JSON.parse(response.read_body)["globalMessage"]
-      puts JSON.parse(response.read_body)["messages"]
- 
- 
-      status = JSON.parse(response.read_body)["status"]
-      status_message = JSON.parse(response.read_body)["globalMessage"]
-      status_two = JSON.parse(response.read_body)["messages"][0]["message"]
-
-      if response.code == "400"
-       redirect_to "/simulador-de-consignado" , 
-        notice: " Algo não saiu como o esperado,Tente Novamente! #{ status },#{ status_message },#{status_two }"
-      elsif 
-       redirect_to "/simulador-de-consignado" , 
-        notice: "Simulação, concluída com Sucesso ! Prazo para retorno de 48 a 72 horas! Numero do Processo: #{ status_two }, Situação: #{ status_message }"
+        redirect_to "/simulador-de-consignado" , 
+          notice: "Já existe para o CPF informado, o valor em análise. Tente com um valor diferente !"
       end
     end 
-  end
-    
-  respond_to do |format| 
-    format.html    { redirect_to(simulador_de_consignado_path,notice: 'CPF já cadastrado')}
-  end
- 
-   end 
-
-   private 
-
-   def verify_proposta 
-
   
-     url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
-
+    private 
+  
+    def verify_proposta 
+  
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+  
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
-
+  
       request = Net::HTTP::Post.new(url)
       request["XSRF-TOKEN"] = "#{session[:set_cookies][11..46]}"
       request["Content-Type"] = "#{session[:content_type]}"
@@ -266,32 +264,20 @@ class Page::CalcController < PageController
         \n\"nrPropos\":\"\",
         \n\"dtPerIni\":\"#{Date.today}\",
         \n\"dtPerFim\":\"#{Date.today}\"\n}"
-
+  
       response = https.request(request)
       response.read_body
-      
+  
       JSON.parse(response.read_body)
-
+  
       @result_propostas = JSON.parse(response.read_body)["propostas"]
-    
+  
       @result_propostas.try(:each) do |proposta| 
-      if @dados[2].to_s == proposta["nrCpfCnpj"]
-        puts "#Action VERIFY_PROPOSTA"
-        return'/simulador-de-consignado', notice: 'Simulação já realizada'
+        if @dados[2].to_s == proposta["nrCpfCnpj"]
+          puts "#Action VERIFY_PROPOSTA"
+          return'/simulador-de-consignado', notice: 'Simulação já realizada'
+        end
       end
-               
-    end
-
-   
-        
-     #@result_propostas.each do |proposta|
-     #  if session[:cpf].to_i == proposta["nrCpfCnpj"].to_i && session[:valor] == proposta["vlSolic"] 
-     #     && session[:date] == proposta["dtPerIni"]
-     #  return page_calc_index_path, 
-     #     notice: 'Solicitação já realizada, Favor ... consultar status de sua proposta'
-     #  end
-     #end      
-        end 
 end
 
-
+end 
