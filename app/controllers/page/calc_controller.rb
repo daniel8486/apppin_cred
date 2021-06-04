@@ -5,11 +5,11 @@ class Page::CalcController < PageController
   require "brdinheiro"
   require "brdata"
  
-  def index 
+ def index 
 
     @users_office_footers = UsersOffice::Footer.all
      
-    url = URI("https://officer.softsaaspin.com.br/BJ21M05/user")
+    url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/user")
       
     https = Net::HTTP.new(url.host, url.port);
     https.use_ssl = true
@@ -35,11 +35,11 @@ class Page::CalcController < PageController
     end 
     
 
-  end
+ end
 
     def segundo_ponto(response_one,cookies,nome,email,cpf,telefone,valor,date,meses)
   
-      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
+      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
 
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
@@ -128,8 +128,17 @@ class Page::CalcController < PageController
     def enviar
 
       @dados = params[:dados] 
+
+        puts "nome: #{@dados[0]}"
+        puts "email: #{@dados[1]}"
+        puts "cpf: #{@dados[2]}"
+        puts "celular: #{@dados[3]}"
+        puts "valor: #{@dados[4]}"
+        puts "data: #{@dados[5]}"
+        puts "meses: #{@dados[6]}"
   
-      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+  
+      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
   
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
@@ -146,10 +155,10 @@ class Page::CalcController < PageController
         \n\"cdAgente\":\"\",
         \n\"nmLogin\":\"pincred\",
         \n\"nrStatus\":\"\",
-        \n\"nrCPFCNPJ\":\"#{@dados[2].to_s}\",
+        \n\"nrCPFCNPJ\":\"#{puts @dados[2].to_s.gsub('.','').gsub('-','')}\",
         \n\"nrPropos\":\"\",
-        \n\"dtPerIni\":\"#{@dados[5].to_s.gsub('-','')}\",
-        \n\"dtPerFim\":\"#{Date.today}\"\n}"
+        \n\"dtPerIni\":\"#{puts @dados[5].to_s.gsub('-','')}\",
+        \n\"dtPerFim\":\"#{puts Date.today.to_s.gsub('-','')}\"\n}"
   
       response = https.request(request)
       response.read_body
@@ -172,7 +181,7 @@ class Page::CalcController < PageController
       end
   
       if !verify_proposta
-        url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
+        url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
   
         https = Net::HTTP.new(url.host, url.port);
         https.use_ssl = true
@@ -185,7 +194,7 @@ class Page::CalcController < PageController
         \n\"principal\": {\n\"cdProdut\": \"3018\",
         \n\"cdConven\":\"108\",
         \n\"cdLoja\":\"108\",
-        \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
+        \n\"nrCpfCnpj\": \"#{@dados[2].to_s.gsub('.','').gsub('-','')}\",
         \n\"qtPresta\": \"#{@dados[6].to_i}\",
         \n\"qtMescar\": \"0\",
         \n\"dtContra\": \"#{@dados[5].to_s.gsub('-','')}\",
@@ -208,7 +217,7 @@ class Page::CalcController < PageController
         \n\"fichaCadastralCliente\": {
           \n\"cliente\": {
               \n\"dsNome\": \"#{@dados[0].upcase.to_s}\",
-              \n\"nrCpfCnpj\": \"#{@dados[2].to_s}\",
+              \n\"nrCpfCnpj\": \"#{@dados[2].to_s.gsub('.','').gsub('-','')}\",
               \n\"dsEmail\": \"#{@dados[1].to_s}\",
               \n\n\"dadosProfissionais\": {
                 \n\"dsEmpres\": \"Pintos LTDA\",
@@ -243,7 +252,7 @@ class Page::CalcController < PageController
   
     def verify_proposta 
   
-      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
   
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
