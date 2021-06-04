@@ -9,7 +9,7 @@ class Page::CalcController < PageController
 
     @users_office_footers = UsersOffice::Footer.all
      
-    url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/user")
+    url = URI("https://officer.softsaaspin.com.br/BJ21M05/user")
       
     https = Net::HTTP.new(url.host, url.port);
     https.use_ssl = true
@@ -39,7 +39,7 @@ class Page::CalcController < PageController
 
     def segundo_ponto(response_one,cookies,nome,email,cpf,telefone,valor,date,meses)
   
-      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501C/calcProsp")
 
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
@@ -138,7 +138,7 @@ class Page::CalcController < PageController
         puts "meses: #{@dados[6]}"
   
   
-      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
   
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
@@ -181,7 +181,7 @@ class Page::CalcController < PageController
       end
   
       if !verify_proposta
-        url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
+        url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501H/cadastrarProposta")
   
         https = Net::HTTP.new(url.host, url.port);
         https.use_ssl = true
@@ -252,7 +252,7 @@ class Page::CalcController < PageController
   
     def verify_proposta 
   
-      url = URI("https://officerhomol.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
+      url = URI("https://officer.softsaaspin.com.br/BJ21M05/BJ21M05/BJ21SS0501E/consultarProposta")
   
       https = Net::HTTP.new(url.host, url.port);
       https.use_ssl = true
