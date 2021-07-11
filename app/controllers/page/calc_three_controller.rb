@@ -140,7 +140,7 @@ class Page::CalcThreeController < PageController
  
 
   def up_clear 
-    redirect_to '/simulador-de-cdc' , notice: 'Limpeza Realizada com Sucesso'
+    redirect_to '/simulador-de-emprestimo-pessoal' , notice: 'Limpeza Realizada com Sucesso'
   end
 
 end

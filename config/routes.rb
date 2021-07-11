@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   namespace :page do
     get 'calc_three/index'
     post 'calc_three/index'
+    post 'calc_three/up_clear'
   end
   namespace :page do
     get 'acomp_calc/index'
