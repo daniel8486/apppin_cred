@@ -56,8 +56,28 @@
         <div class="row">
           <div class="col-md-3 mb-2">
          <div class="mb-3">
-          <label for="valor"> Valor <span class="text-muted">* </span></label> 
-          <%= text_field_tag :valor , '', class: 'form-control', placeholder: 'Apenas Numeros',id:'money',required: true  %>
+
+
+       
+          <h2><span id="impressao"> <%= :valor %></span></h2>
+
+          <!-- <input type="range" value="300" min="300" max="6000" step="100" id="range"> --> 
+          
+          <h2> </h2>
+
+          <%= range_field_tag :valor ,'',:value =>"300",:min =>"300",:max =>"6000",:step =>"100",:id =>"range", class: 'form-control' %>
+
+
+          <!--  <label for="valor"> Valor <span class="text-muted">* </span></label> -->
+       
+          <%#= text_field_tag :valor , 
+              '', 
+              class: 'form-control', 
+              placeholder: 'Apenas Numeros',
+              id:'money',
+              required: true
+          %>
+
         </div>
 
           </div>

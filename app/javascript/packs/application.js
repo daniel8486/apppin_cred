@@ -50,3 +50,21 @@ $(document).ready(function(){
 //  $('#phone').mask('00.0.0000-0000', {reverse: true}); 
 //});
 
+$(function() { 
+
+let range = document.getElementById("range");
+   
+let impressao = document.getElementById("impressao");
+
+impressao.innerHTML = range.value;
+
+range.oninput = function() {
+  impressao.innerHTML = parseInt(this.value).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// disparar o evento manualmente
+let event = new CustomEvent("input");
+range.dispatchEvent(event);
+
+});
+
