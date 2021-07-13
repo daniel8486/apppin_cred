@@ -56,7 +56,7 @@
             <label for="firstName">Nome <span class="text-muted"> * </span> </label>
             <%= text_field_tag :nome , "", class: 'form-control' , style: 'text-transform: uppercase' %>
             <div class="invalid-feedback">
-              Valid first name is required.
+              Informe o Nome.
             </div>
           </div>
            </div>
@@ -66,7 +66,7 @@
           <label for="email">Email <span class="text-muted"> * </span></label>
          <%= text_field_tag :email, "", class: 'form-control', style: 'text-transform: uppercase'%>
           <div class="invalid-feedback">
-            Please enter a valid email address for shipping updates.
+            Informe o Email.
           </div>
         </div>
 
@@ -74,15 +74,15 @@
           <div class="col-md-6 mb-3">
          <div class="mb-3">
            <label for="address">CPF <span class="text-muted"> * </span> </label>
-          <%= text_field_tag :cpf , "", class: 'form-control' , placeholder: 'Apenas Numeros'%>
+          <%= text_field_tag :cpf , "", class: 'form-control' , placeholder: 'Apenas Numeros',required: true%>
         </div>
 
           </div>
           <div class="col-md-6 mb-3">
             <label for="address2">Telefone <span class="text-muted"> * </span></label>
-          <%= text_field_tag :telefone , "", class: 'form-control', placeholder: 'Apenas Numeros sem o DDD'%>
+          <%= text_field_tag :telefone , "", class: 'form-control', placeholder: 'Apenas Numeros sem o DDD',required: true%>
             <div class="invalid-feedback">
-              Please provide a valid state.
+              Informe o Telefone.
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@
             <label for="address2"> Data <span class="text-muted"> </span></label>
           <%= date_field_tag :date , "", class: 'form-control' %>
             <div class="invalid-feedback">
-              Please provide a valid state.
+              Informe a Data.
             </div>
           </div>
           <div class="form-group col-md-2">
